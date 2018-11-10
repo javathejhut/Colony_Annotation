@@ -45,7 +45,7 @@ if __name__ == "__main__":
         root.destroy()
         f.close()
     
-    #mouseclick event
+    #mouseclick events: left click to mark petite, right click to mark grande, enter to finish
     canvas.bind("<Button-1>",petitemark)
     canvas.bind("<Button-3>",grandemark)
     canvas.bind("<Return>", close)
