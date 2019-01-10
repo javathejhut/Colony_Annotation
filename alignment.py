@@ -327,20 +327,22 @@ if __name__ == '__main__':
     plt.show()
     
     petites = 0
-    total = len(hough_sizes1) - 1
+    numColonies = len(np.unique(labels_mask1))
     
     for label in np.unique(labels_mask1):
         if label != 0:
-            xs, ys = np.where(labels_mask1 == label)
             area = 0
-            matching = 0
+            matchingPix = 0
+            xs, ys = np.where(labels_mask1 == label)
             for i in range(len(xs)):
                 x = xs[i]
                 y = ys[i]
                 if labels_mask2[x][y] != 0:
-                    matching = matching + 1
+                    matchingPix = matchingPix + 1
                 area = area + 1
-            if matching/area < 0.2:
-                petites = petites + 0
+            if matchingPix/area < 0.2:
+                petites = petites + 1
+            print (matchingPix/area)
     
     print("The number of petites is", petites)
+    print("The percent of petites is", petites/numColonies)
