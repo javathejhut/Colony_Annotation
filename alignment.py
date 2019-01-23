@@ -22,11 +22,14 @@ im2_color = cv2.imread("./replicates_p4/p4_1_v1.png");
 im1 = cv2.cvtColor(im1_color,cv2.COLOR_BGR2GRAY)
 im2 = cv2.cvtColor(im2_color,cv2.COLOR_BGR2GRAY)
 
-im1_sq = im1[300:980,300:980]
-im2_sq = im2[300:980,300:980]
-
 # Find size of image1
 sz = im1.shape
+
+#place region to be aligned in a black background
+mask = np.zeros((sz),np.uint8)
+cv2.circle(mask,(640,640),415,(255,255,255),-1,8,0)
+im1_bg = cv2.bitwise_and(im1,im1,mask = mask)
+im2_bg = cv2.bitwise_and(im2,im2,mask = mask)
 
 # Define the motion model
 warp_mode = cv2.MOTION_EUCLIDEAN
@@ -345,4 +348,4 @@ if __name__ == '__main__':
             print (matchingPix/area)
     
     print("The number of petites is", petites)
-    print("The percent of petites is", petites/numColonies)
+    print("The percent of petites is", petites/numColonies*100)
