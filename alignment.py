@@ -3,7 +3,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 import math
 
-from skimage import data, color
+from skimage import color
 from skimage.transform import hough_circle
 from skimage.feature import peak_local_max, canny
 from skimage.draw import circle_perimeter
@@ -51,7 +51,7 @@ termination_eps = 1e-9;
 criteria = (cv2.TERM_CRITERIA_EPS | cv2.TERM_CRITERIA_COUNT, number_of_iterations,  termination_eps)
 
 # Run the ECC algorithm. The results are stored in warp_matrix.
-(cc, warp_matrix) = cv2.findTransformECC (im1_sq,im2_sq,warp_matrix, warp_mode, criteria)
+(cc, warp_matrix) = cv2.findTransformECC (im1_bg,im2_bg,warp_matrix, warp_mode, criteria)
 
 if warp_mode == cv2.MOTION_HOMOGRAPHY :
     # Use warpPerspective for Homography 
@@ -71,6 +71,7 @@ cv2.imshow("Image 2", im2)
 cv2.imshow("Aligned Image 2", overlay)
 cv2.waitKey(25)
 '''
+
 
 #identify overlappying colonies
 class HoughPlateDetect:
@@ -196,7 +197,6 @@ if __name__ == '__main__':
     cen_x1 = parameters1[0]
     cen_y1 = parameters1[1]
     radius1 = parameters1[2]
-    print(radius1)
 
     leftmost_col1 = int(cen_x1 - float(radius1)/math.sqrt(2))
     rightmost_col1 = int(cen_x1 + float(radius1)/math.sqrt(2))
@@ -210,7 +210,6 @@ if __name__ == '__main__':
     cen_x2 = parameters2[0]
     cen_y2 = parameters2[1]
     radius2 = parameters2[2]
-    print(radius2)
     
     leftmost_col2 = int(cen_x2 - float(radius2)/math.sqrt(2))
     rightmost_col2 = int(cen_x2 + float(radius2)/math.sqrt(2))
@@ -248,21 +247,18 @@ if __name__ == '__main__':
     initial_sizes2[0] = 0
 
     #setting foreground regions < size(100) to background
-    small_sizes1 = initial_sizes1 < 100
+    small_sizes1 = initial_sizes1 < 50
     small_sizes1[0] = 0 
-    small_sizes2 = initial_sizes2 < 100
+    small_sizes2 = initial_sizes2 < 50
     small_sizes2[0] = 0
 
     #get rid of large foreground objects
-    large_sizes1 = initial_sizes1 > 9500
+    large_sizes1 = initial_sizes1 > 400
     large_sizes1[0] = 0
-    large_sizes2 = initial_sizes2 > 9500
-    large_sizes2[0] = 0
 
     labels1[small_sizes1[labels1]] = 0
     labels1[large_sizes1[labels1]] = 0
     labels2[small_sizes2[labels2]] = 0
-    labels2[large_sizes2[labels2]] = 0
 
     preprocessed_sizes1 = np.bincount(labels1.ravel())
     preprocessed_sizes2 = np.bincount(labels2.ravel())
@@ -322,7 +318,9 @@ if __name__ == '__main__':
     hough_sizes2 = np.bincount(labels_mask2.ravel())
     hough_sizes2[0] = 0
 
-    #print (str(np.count_nonzero(hough_sizes)) + " after hough mask elimination. \n")
+    print (str(np.count_nonzero(hough_sizes1)) + " after hough mask elimination. \n")
+    
+    plt.show()
 
     plt.imshow(labels_mask1, cmap=plt.cm.gray)
     plt.show()
@@ -345,7 +343,6 @@ if __name__ == '__main__':
                 area = area + 1
             if matchingPix/area < 0.2:
                 petites = petites + 1
-            print (matchingPix/area)
     
     print("The number of petites is", petites)
-    print("The percent of petites is", petites/numColonies*100)
+    print("The percent of petites is", petites/numColonies*100, "%")
